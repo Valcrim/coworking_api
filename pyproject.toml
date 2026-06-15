@@ -1,0 +1,20 @@
+[project]
+name = "coworking"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "valcrim",email = "vladimir.vyaz1@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard] (>=0.136.3,<0.137.0)",
+    "sqlalchemy (>=2.0.50,<3.0.0)",
+    "asyncpg (>=0.31.0,<0.32.0)",
+    "python-jose (>=3.5.0,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

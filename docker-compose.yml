@@ -1,0 +1,45 @@
+services:
+  api:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - $BACKEND_PORTS
+    networks:
+      - app_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18-alpine
+    container_name: coworking_db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    ports:
+      - $DB_PORTS
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DB_USER -d $DB_NAME"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - app_network
+    restart: unless-stopped
+
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
