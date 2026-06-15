@@ -36,10 +36,29 @@ async def get_room(
         ):
     room = await repo.get_room_with_slots(room_id)
     if not room: 
-        return HTTPException(status.HTTP_404_NOT_FOUND, 
+        raise HTTPException(status.HTTP_404_NOT_FOUND, 
                              f"Room with this id is does not exist")
     return room
 
+@router.delete('/{room_id}')
+async def delete_room(
+        user: AdminUser,
+        room_id: int, 
+        repo: RoomRepository = Depends(get_room_repo)
+        ):
+    """ 
+    Удаление комнаты.
+    Метод защищен. Доступно только администраторам.
+    """
+    room = await repo.get_room(room_id)
+    if not room: 
+        raise HTTPException(status.HTTP_404_NOT_FOUND, 
+                             f"Room with this id is does not exist")
+    if await repo.delete_room(room_id):
+        return {"detail": "Room deleted successfully"}
+    else:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                             "Failed to delete the room")
 
 @router.post('/{room_id}/slots')
 async def create_slot(

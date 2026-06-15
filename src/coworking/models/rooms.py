@@ -19,4 +19,4 @@ class RoomBase(Base):
     __tablename__ = 'rooms'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    slots = relationship("SlotBase", back_populates="room")
+    slots = relationship("SlotBase", back_populates="room", cascade="all, delete-orphan")
