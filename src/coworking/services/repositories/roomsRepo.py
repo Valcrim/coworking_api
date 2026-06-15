@@ -6,9 +6,10 @@ from sqlalchemy.orm import selectinload
 from datetime import datetime, time
 
 class RoomRepository(BaseRepository[RoomBase]):
+    """ Репозиторий для работы с моделью комнаты в БД. """
     model = RoomBase
 
-    async def create_room(self):
+    async def create_room(self) -> RoomBase:
         return await self._create()
 
     async def get_rooms(self) -> list[RoomBase]:        
@@ -35,9 +36,11 @@ class RoomRepository(BaseRepository[RoomBase]):
 
 
 class SlotRepository(BaseRepository[SlotBase]):
+    """ Репозиторий для работы с моделью слотов в БД. """
     model = SlotBase
 
-    async def create_slot(self, room_id: int, date: datetime, start: time, end: time) -> SlotBase:
+    async def create_slot(self, room_id: int, date: datetime, 
+                          start: time, end: time) -> SlotBase:
         return await self._create(room_id=room_id, date=date, start=start, end=end)
 
     async def get_slots(self, room_id: int) -> list[SlotBase]:
@@ -50,17 +53,11 @@ class SlotRepository(BaseRepository[SlotBase]):
     async def delete_slot(self, id: int) -> bool:
         return await self._delete(id)
 
-    async def book_slot(self, slot_id: int, user_id: int):
+    async def book_slot(self, slot_id: int, user_id: int) -> SlotBase:
         slot = await self.session.get(self.model, slot_id)
         slot.booked_by = user_id
         self.session.add(slot)
         await self.session.commit()
         return slot
-
-    async def cancel_slot_booking(self, slot_id: int):
-        booked: SlotBase = self.session.get(self.model, slot_id)
-        booked.booked_by = None
-
-
 
 

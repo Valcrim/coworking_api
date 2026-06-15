@@ -22,6 +22,10 @@ async def create_room(
         user: AdminUser,
         room_repo: RoomRepository = Depends(get_room_repo)
         ):
+    """ 
+    Создание новой комнаты.
+    Метод защищен. Доступно только администраторам.
+    """
     room = await room_repo.create_room()
     return room
 
@@ -44,5 +48,9 @@ async def create_slot(
         data: SlotSchema, 
         repo: SlotRepository = Depends(get_slot_repo)
         ):
+    """ 
+    Создание нового слота для комнаты.
+    Метод защищен. Доступно только администраторам.
+    """
     slot = await repo.create_slot(room_id, data.start, data.end)
     return slot

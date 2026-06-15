@@ -4,6 +4,7 @@ from sqlalchemy import select
 import hashlib
 
 class UserRepository(BaseRepository[UserBase]):
+    """ Репозиторий для работы с моделью пользователя в БД. """
     model = UserBase
 
     async def create_user(self, username, password, is_admin=False) -> UserBase:

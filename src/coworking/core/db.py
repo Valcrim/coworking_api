@@ -20,10 +20,15 @@ async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
     expire_on_commit=False)
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """ Зависимость для получения асинхронной сессии БД. """
     async with async_session() as session:
         yield session
 
-async def _fill_db_with_defalut_data():    
+async def _fill_db_with_defalut_data():
+    """
+    Заполняет БД начальными данными.
+    Вызывается при инициализации БД. 
+    """
     rooms_count = 3
     days = [datetime(day=i, month=6, year=2026) for i in range(1,8)]
     default_slots = [

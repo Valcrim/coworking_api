@@ -12,7 +12,8 @@ async def get_current_user(
         token: str,
         user_repo: UserRepository = Depends(get_user_repo),
         security: SecurityService = Depends(get_security_service),
-        ):
+        ) -> UserBase | None:
+    """ Получение текущего пользователя по access токену. """
     payload = security.validate_token(token)
     if payload is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
@@ -29,7 +30,8 @@ async def get_current_user(
 
 async def get_admin(
         user: UserBase = Depends(get_current_user)
-        ):
+        ) -> UserBase | None:
+    """ Проверка наличия прав администратора у пользователя. """
     if not user.is_admin:
         raise HTTPException(status.HTTP_403_FORBIDDEN, 
                              "Insufficient permissions. Admin rights are required")
@@ -40,9 +42,10 @@ async def get_admin_or_owner(
         owner_id: int | None = Depends(get_slot_owner),
         user: UserBase = Depends(get_current_user)
         ) -> UserBase | None:
+    """ Проверка наличия прав администратора у пользователя. """
     if owner_id is None:
         return user
     if not (user.is_admin or user.id == owner_id):
         raise HTTPException(status.HTTP_403_FORBIDDEN, 
-                             "Insufficient permissions. Admin rights are required")
+                             "Insufficient permissions. Admin rights or slot ownership are required")
     return user

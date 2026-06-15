@@ -2,12 +2,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 class BaseRepository[ModelType]():
+    """
+    Базовый репозиторий для работы с БД.
+    Реализует базовые CRUD операции для модели ModelType.
+    """
     model: type[ModelType]
 
     def __init__(self, async_session: AsyncSession):
         self.session = async_session
 
-    def __call__(self):
+    def __call__(self): # Позволяет использовать репозиторий как зависимость в FastAPI
         return self
 
     async def _create(self, **data: dict | None) -> ModelType:

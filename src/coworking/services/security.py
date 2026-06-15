@@ -48,7 +48,7 @@ class SecurityService:
         if exp is None:
             return True
         
-        now = datetime.now(timezone.utc).timestamp()
+        now = datetime.now(timezone.utc).timestamp() # Перевод datetime в число секунд с 1970 года
         return exp < now
         
 
