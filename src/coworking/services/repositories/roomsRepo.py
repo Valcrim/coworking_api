@@ -46,6 +46,12 @@ class SlotRepository(BaseRepository[SlotBase]):
     async def get_slots(self, room_id: int) -> list[SlotBase]:
         slots = await self.session.get(self.model, room_id)
         return slots
+    
+    async def get_user_slots(self, user_id: int) -> list[SlotBase]:
+        query = select(self.model).where(self.model.booked_by == user_id)
+        result = await self.session.execute(query)
+        slots = result.scalars().all()
+        return slots
         
     async def get_slot(self, id: int) -> SlotBase:
         return await self._get(id)

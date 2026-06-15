@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException, status
-from schemas.users import UserSchema, CredentialsSchema
 from services.repositories.usersRepo import UserRepository
-from services.security import SecurityService
-from dependencies.repositories import get_user_repo
-from dependencies.security import get_security_service
+from services.repositories.roomsRepo import SlotRepository
+from dependencies.types import CurrentUser
+from dependencies.repositories import get_user_repo, get_slot_repo
+
 
 router = APIRouter(tags=['users'])
 
@@ -15,3 +15,37 @@ async def get_users(
         ):
     users = await repo.get_users()
     return users
+
+@router.get('/users/{user_id}')
+async def get_user(
+        user_id: int,
+        repo: UserRepository = Depends(get_user_repo)
+        ):
+    user = await repo.get_user(user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND,
+                             "User with this id does not exist")
+    return user
+
+@router.get('/me')
+async def get_current_user(
+        user: CurrentUser
+        ):
+    return user
+
+@router.get('/users/{user_id}/slots', tags=['slots'])
+async def get_user_slots(
+    user_id: int,
+    repo: SlotRepository = Depends(get_slot_repo)
+    ):
+    slots = await repo.get_user_slots(user_id)
+    return slots
+
+
+@router.get('/me/slots', tags=['slots'])
+async def get_current_user(
+        user: CurrentUser,
+        repo: SlotRepository = Depends(get_slot_repo)
+        ):
+    slots = await repo.get_user_slots(user.id)
+    return slots
