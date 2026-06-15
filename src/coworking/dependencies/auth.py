@@ -12,7 +12,7 @@ async def get_current_user(
         token: str,
         user_repo: UserRepository = Depends(get_user_repo),
         security: SecurityService = Depends(get_security_service),
-        ) -> UserBase | None:
+        ) -> UserBase:
     """ Получение текущего пользователя по access токену. """
     payload = security.validate_token(token)
     if payload is None:
@@ -25,6 +25,9 @@ async def get_current_user(
                              "Token is not valid") 
 
     user = await user_repo.get_user(int(uid))
+    if user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED,
+                             "User not found")
     return user
 
 
