@@ -42,7 +42,7 @@ async def delete_slot(
         repo: SlotRepository = Depends(get_slot_repo)
         ):
     """ 
-    Удаление слота в комнате.
+    Удаление слота.
     Метод защищен. Доступно только администраторам.
     """
     slot = await repo.get_slot(slot_id)

@@ -2,18 +2,15 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException, status
 from services.repositories.roomsRepo import RoomRepository, SlotRepository
-from services.repositories.usersRepo import UserRepository
-from services.security import SecurityService
-from schemas.rooms import RoomSchema, SlotSchema, BookingSchema
-from models.users import UserBase
-from dependencies.repositories import get_room_repo, get_slot_repo, get_user_repo
-from dependencies.security import get_security_service
-from dependencies.types import CurrentUser, AdminUser, OwnerOrAdmin
+from schemas.rooms import SlotSchema
+from dependencies.repositories import get_room_repo, get_slot_repo
+from dependencies.types import AdminUser
 
 router = APIRouter(prefix='/rooms', tags=['rooms'])
 
 @router.get('/')
 async def get_rooms(repo: RoomRepository = Depends(get_room_repo)):
+    """ Получение списка всех комнат с их слотами. """
     rooms = await repo.get_rooms_with_slots()
     return rooms
 
@@ -34,6 +31,7 @@ async def get_room(
         room_id: int, 
         repo: RoomRepository = Depends(get_room_repo)
         ):
+    """ Получение информации о комнате с ее слотами. """
     room = await repo.get_room_with_slots(room_id)
     if not room: 
         raise HTTPException(status.HTTP_404_NOT_FOUND, 
