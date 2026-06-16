@@ -42,7 +42,7 @@ async def login(
     user = await repo.authenticate(data.login, data.password)
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                             "Incorrect username or password")
+                            "Incorrect username or password")
     
     access_token = security.create_access_token({"sub": str(user.id)})
     refresh_token = security.create_refresh_token({"sub": str(user.id)})
@@ -61,12 +61,17 @@ async def refresh_access_token(
     payload = security.validate_token(refresh_token)
     if payload is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                         "Token is not valid or expired")
+                            "Token is not valid or expired")
     try:
+        tkn_type = payload["type"]
         uid = payload["sub"]
     except KeyError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                             "Token is not valid")
+                            "Token is not valid")
+    
+    if tkn_type != "refresh":
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED,
+                            "Token is not a refresh token")
     
     new_access_token = security.create_access_token({"sub": uid})
     return {"access_token": new_access_token}

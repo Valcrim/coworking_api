@@ -17,17 +17,22 @@ async def get_current_user(
     payload = security.validate_token(token)
     if payload is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                         "Token is not valid or expired")
+                            "Token is not valid or expired")
     try:
+        type = payload["type"]
         uid = payload["sub"]
     except KeyError:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                             "Token is not valid") 
+                            "Token is not valid") 
+
+    if type != "access":
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED,
+                            "Token is not an access token")
 
     user = await user_repo.get_user(int(uid))
     if user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
-                             "User not found")
+                            "User not found")
     return user
 
 
@@ -37,7 +42,7 @@ async def get_admin(
     """ Проверка наличия прав администратора у пользователя. """
     if not user.is_admin:
         raise HTTPException(status.HTTP_403_FORBIDDEN, 
-                             "Insufficient permissions. Admin rights are required")
+                            "Insufficient permissions. Admin rights are required")
     return user
 
 
@@ -50,5 +55,5 @@ async def get_admin_or_owner(
         return user
     if not (user.is_admin or user.id == owner_id):
         raise HTTPException(status.HTTP_403_FORBIDDEN, 
-                             "Insufficient permissions. Admin rights or slot ownership are required")
+                            "Insufficient permissions. Admin rights or slot ownership are required")
     return user

@@ -25,7 +25,7 @@ async def update_slot(
     slot = await repo.get_slot(slot_id)
     if not slot:
         raise HTTPException(status.HTTP_404_NOT_FOUND,
-                             "Slot with this id does not exist")
+                            "Slot with this id does not exist")
     
     if slot.booked_by is None:
         booked_by = user.id
@@ -48,9 +48,9 @@ async def delete_slot(
     slot = await repo.get_slot(slot_id)
     if not slot: 
         raise HTTPException(status.HTTP_404_NOT_FOUND, 
-                             f"Slot with this id is does not exist")
+                            f"Slot with this id is does not exist")
     if await repo.delete_slot(slot_id):
         return {"detail": "Slot deleted successfully"}
     else:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                             "Failed to delete the slot")
+                            "Failed to delete the slot")
